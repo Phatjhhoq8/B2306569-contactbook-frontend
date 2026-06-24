@@ -8,22 +8,6 @@
       @delete:contact="deleteContact"
     />
 
-    <!-- Alert thông báo cập nhật thành công tùy chỉnh -->
-    <div v-if="showSuccessAlert" class="alert alert-success mt-3" role="alert" id="edit-success-alert">
-      Liên hệ được cập nhật thành công.
-    </div>
-
-    <!-- Alert xác nhận xóa liên hệ tùy chỉnh -->
-    <div v-if="showDeleteConfirm" class="alert alert-danger mt-3" role="alert" id="edit-delete-confirm">
-      <h5><i class="fas fa-exclamation-triangle"></i> Xác nhận xóa</h5>
-      <p>Bạn muốn xóa Liên hệ này?</p>
-      <hr>
-      <div class="d-flex justify-content-end">
-        <button class="btn btn-secondary btn-sm mr-2" @click="showDeleteConfirm = false">Hủy bỏ</button>
-        <button class="btn btn-danger btn-sm" id="btn-confirm-delete-one" @click="confirmDeleteContact">Đồng ý xóa</button>
-      </div>
-    </div>
-
     <p>{{ message }}</p>
   </div>
 </template>
@@ -48,8 +32,6 @@ export default {
     return {
       contact: null,
       message: "",
-      showSuccessAlert: false,
-      showDeleteConfirm: false,
     };
   },
 
@@ -77,25 +59,32 @@ export default {
       try {
         await ContactService.update(this.contact._id, data);
 
-        this.showSuccessAlert = true;
-        setTimeout(() => {
-          this.showSuccessAlert = false;
-          this.$router.push({ name: "contactbook" });
-        }, 2000);
+        this.message = "Liên hệ được cập nhật thành công!";
+        alert(this.message);
+
+        this.$router.push({
+          name: "contactBook",
+        });
       } catch (error) {
         console.log(error);
       }
     },
 
-    deleteContact() {
-      this.showDeleteConfirm = true;
-    },
+    async deleteContact() {
+      const reply = window.confirm(
+        "Bạn muốn xóa liên hệ này?"
+      );
 
-    async confirmDeleteContact() {
-      this.showDeleteConfirm = false;
+      if (!reply) return;
+
       try {
         await ContactService.delete(this.contact._id);
-        this.$router.push({ name: "contactbook" });
+
+        alert("Xóa liên hệ thành công!");
+
+        this.$router.push({
+          name: "contactBook",
+        });
       } catch (error) {
         console.log(error);
       }
