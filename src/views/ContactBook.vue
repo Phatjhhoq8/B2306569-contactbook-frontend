@@ -25,6 +25,17 @@
           <i class="fas fa-trash"></i> Xóa tất cả
         </button>
       </div>
+
+      <!-- Hộp thoại xác nhận xóa tùy chỉnh -->
+      <div v-if="showCustomConfirm" class="alert alert-danger mt-3" role="alert" id="delete-confirm-box">
+        <h5 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Xác nhận xóa</h5>
+        <p>Bạn có chắc chắn muốn xóa tất cả Liên hệ không? Hành động này không thể hoàn tác.</p>
+        <hr>
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-secondary btn-sm mr-2" id="btn-cancel-delete" @click="showCustomConfirm = false">Hủy bỏ</button>
+          <button class="btn btn-danger btn-sm" id="btn-confirm-delete" @click="confirmDeleteAll">Đồng ý xóa</button>
+        </div>
+      </div>
     </div>
     <div class="mt-3 col-md-6">
       <div v-if="activeContact">
@@ -63,6 +74,7 @@ export default {
       contacts: [],
       searchText: "",
       activeIndex: -1,
+      showCustomConfirm: false,
     };
   },
   watch: {
@@ -105,14 +117,16 @@ export default {
       this.retrieveContacts();
       this.activeIndex = -1;
     },
-    async removeAllContacts() {
-      if (confirm("Bạn muốn xóa tất cả Liên hệ?")) {
-        try {
-          await ContactService.deleteAll();
-          this.refreshList();
-        } catch (error) {
-          console.log(error);
-        }
+    removeAllContacts() {
+      this.showCustomConfirm = true;
+    },
+    async confirmDeleteAll() {
+      this.showCustomConfirm = false;
+      try {
+        await ContactService.deleteAll();
+        this.refreshList();
+      } catch (error) {
+        console.log(error);
       }
     },
     goToAddContact() {
